@@ -12,7 +12,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    restart: always  
+    restart: always
   litespeed:
     image: litespeedtech/litespeed:${LSWS_VERSION}-${PHP_VERSION}
     env_file:
@@ -20,6 +20,7 @@ services:
     volumes:
         - ./lsws/conf:/usr/local/lsws/conf
         - ./lsws/admin/conf:/usr/local/lsws/admin/conf
+        - ./lsws/trial.key:/lsws-6.1.2/trial.key:ro
         - ./bin/container:/usr/local/bin
         - ./sites:/var/www/vhosts/
         - ./acme:/root/.acme.sh/
@@ -39,4 +40,12 @@ services:
       - 8443:443
     environment:
         DATABASE_HOST: mysql
-    restart: always    
+    restart: always
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - ./cache:/data
