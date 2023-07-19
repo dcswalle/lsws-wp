@@ -1,10 +1,10 @@
-# LiteSpeed WordPress Docker Container
-[![Build Status](https://github.com/litespeedtech/lsws-docker-env/workflows/docker-build/badge.svg)](https://github.com/litespeedtech/lsws-docker-env/actions/)
-[![docker pulls](https://img.shields.io/docker/pulls/litespeedtech/litespeed?style=flat&color=blue)](https://hub.docker.com/r/litespeedtech/litespeed)
+# OpenLiteSpeed WordPress Docker Container
+[![Build Status](https://github.com/litespeedtech/ols-docker-env/workflows/docker-build/badge.svg)](https://github.com/litespeedtech/ols-docker-env/actions/)
+[![docker pulls](https://img.shields.io/docker/pulls/litespeedtech/openlitespeed?style=flat&color=blue)](https://hub.docker.com/r/litespeedtech/openlitespeed)
 [<img src="https://img.shields.io/badge/slack-LiteSpeed-blue.svg?logo=slack">](litespeedtech.com/slack) 
 [<img src="https://img.shields.io/twitter/follow/litespeedtech.svg?label=Follow&style=social">](https://twitter.com/litespeedtech)
 
-Install a Lightweight WordPress container with LiteSpeed stable version based on Ubuntu 22.04 Linux.
+Install a lightweight WordPress container with OpenLiteSpeed Edge or Stable version based on Ubuntu 22.04 Linux.
 
 ### Prerequisites
 1. [Install Docker](https://www.docker.com/)
@@ -12,20 +12,19 @@ Install a Lightweight WordPress container with LiteSpeed stable version based on
 
 ## Configuration
 Edit the `.env` file to update the demo site domain, default MySQL user, and password.
-Feel free to check [Docker hub Tag page](https://hub.docker.com/repository/docker/litespeedtech/litespeed/tags) if you want to update default litespeed and php versions. 
+Feel free to check [Docker hub Tag page](https://hub.docker.com/repository/docker/litespeedtech/openlitespeed/tags) if you want to update default openlitespeed and php versions. 
 
 ## Installation
 Clone this repository or copy the files from this repository into a new folder:
 ```
-git clone https://github.com/litespeedtech/lsws-docker-env.git
+git clone https://github.com/litespeedtech/ols-docker-env.git
 ```
-Open a terminal, `cd` to the folder in which `docker-compose.yml` is saved, and run:
+Open a terminal, `cd` to the folder in which `docker compose.yml` is saved, and run:
 ```
 docker compose up
 ```
 
-Note: If you wish to run a single web server container, please see the [usage method here](https://github.com/litespeedtech/lsws-dockerfiles#usage).
-
+Note: If you wish to run a single web server container, please see the [usage method here](https://github.com/litespeedtech/ols-dockerfiles#usage).
 
 ## Components
 The docker image installs the following packages on your system:
@@ -33,7 +32,7 @@ The docker image installs the following packages on your system:
 |Component|Version|
 | :-------------: | :-------------: |
 |Linux|Ubuntu 22.04|
-|LiteSpeed|[Latest version](https://www.litespeedtech.com/products/litespeed-web-server/download)|
+|OpenLiteSpeed|[Latest version](https://openlitespeed.org/downloads/)|
 |MariaDB|[Stable version: 10.5](https://hub.docker.com/_/mariadb)|
 |PHP|[Latest version](http://rpms.litespeedtech.com/debian/)|
 |LiteSpeed Cache|[Latest from WordPress.org](https://wordpress.org/plugins/litespeed-cache/)|
@@ -46,17 +45,17 @@ Cloned project
 ```bash
 ├── acme
 ├── bin
-│   └── container
+│   └── container
 ├── data
-│   └── db
+│   └── db
 ├── logs
-│   ├── access.log
-│   ├── error.log
-│   ├── lsrestart.log
-│   └── stderr.log
+│   ├── access.log
+│   ├── error.log
+│   ├── lsrestart.log
+│   └── stderr.log
 ├── lsws
-│   ├── admin-conf
-│   └── conf
+│   ├── admin-conf
+│   └── conf
 ├── sites
 │   └── localhost
 ├── LICENSE
@@ -87,9 +86,6 @@ You can run with daemon mode, like so:
 docker compose up -d
 ```
 The container is now built and running. 
-
-Note: The container will auto-apply a 15-day trial license. Please contact LiteSpeed to extend the trial, or apply your own license, [starting from $0](https://www.litespeedtech.com/pricing).
-
 ### Stopping a Container
 ```
 docker compose stop
@@ -132,7 +128,7 @@ To preconfigure the `wp-config` file, run the `database.sh` script for your doma
 ```
 ./bin/appinstall.sh [-A, --app] wordpress [-D, --domain] example.com
 ```
-### Installing ACME 
+### Install ACME 
 We need to run the ACME installation command the **first time only**. 
 With email notification:
 ```
@@ -143,12 +139,25 @@ Use the root domain in this command, and it will check for a certificate and aut
 ```
 ./bin/acme.sh [-D, --domain] example.com
 ```
-### Updating Web Server
+
+Other parameters:
+
+  * [`-r`, `--renew`]: Renew a specific domain with -D or --domain parameter if posibile. To force renew, use -f parameter.
+
+  * [`-R`, `--renew-all`]: Renew all domains if possible. To force renew, use -f parameter.  
+
+  * [`-f`, `-F`, `--force`]: Force renew for a specific domain or all domains. 
+
+  * [`-v`, `--revoke`]: Revoke a domain.  
+
+  * [`-V`, `--remove`]: Remove a domain.   
+
+### Update Web Server
 To upgrade the web server to latest stable version, run the following:
 ```
 bash bin/webadmin.sh [-U, --upgrade]
 ```
-### Applying OWASP ModSecurity
+### Apply OWASP ModSecurity
 Enable OWASP `mod_secure` on the web server: 
 ```
 bash bin/webadmin.sh [-M, --mod-secure] enable
@@ -158,31 +167,21 @@ Disable OWASP `mod_secure` on the web server:
 bash bin/webadmin.sh [-M, --mod-secure] disable
 ```
 >Please ignore ModSecurity warnings from the server. They happen if some of the rules are not supported by the server.
-### Applying license to LSWS
-Apply your license with command:
-```
-bash bin/webadmin.sh [-S, --serial] YOUR_SERIAL
-```
-Apply trial license to server with command:
-```
-bash bin/webadmin.sh [-S, --serial] TRIAL
-```
-
 ### Accessing the Database
-After installation, you can use phpMinAdmin to access the database by visiting http://127.0.0.1:8080 or https://127.0.0.1:8443. The default username is `root`, and the password is the same as the one you supplied in the `.env` file.
+After installation, you can use phpMyAdmin to access the database by visiting `http://127.0.0.1:8080` or `https://127.0.0.1:8443`. The default username is `root`, and the password is the same as the one you supplied in the `.env` file.
 
 ## Customization
-If you want to customize the image by adding some packages, e.g. `lsphp74-pspell`, just extend it with a Dockerfile. 
+If you want to customize the image by adding some packages, e.g. `lsphp80-pspell`, just extend it with a Dockerfile. 
 1. We can create a `custom` folder and a `custom/Dockerfile` file under the main project. 
 2. Add the following example code to `Dockerfile` under the custom folder
 ```
-FROM litespeedtech/litespeed:latest
-RUN apt-get update && apt-get install lsphp74-pspell
+FROM litespeedtech/openlitespeed:latest
+RUN apt-get update && apt-get install lsphp80-pspell -y
 ```
-3. Add `build: ./custom` line under the "image: litespeedtech" of docker-compose file. So it will looks like this 
+3. Add `build: ./custom` line under the "image: litespeedtech" of docker-composefile. So it will looks like this 
 ```
   litespeed:
-    image: litespeedtech/litespeed:${LSWS_VERSION}-${PHP_VERSION}
+    image: litespeedtech/openlitespeed:${OLS_VERSION}-${PHP_VERSION}
     build: ./custom
 ```
 4. Build and start it with command:
@@ -191,9 +190,9 @@ docker compose up --build
 ```
 
 ## Support & Feedback
-If you still have a question after using LiteSpeed Docker, you have a few options.
-* Join [the GoLiteSpeed Slack community](https://litespeedtech.com/slack/) for real-time discussion
-* Post to [the LiteSpeed Forums](https://www.litespeedtech.com/support/forum/) for community support
-* Reporting any issue on [Github lsws-docker-env](https://github.com/litespeedtech/lsws-docker-env/issues) project
+If you still have a question after using OpenLiteSpeed Docker, you have a few options.
+* Join [the GoLiteSpeed Slack community](https://litespeedtech.com/slack) for real-time discussion
+* Post to [the OpenLiteSpeed Forums](https://forum.openlitespeed.org/) for community support
+* Reporting any issue on [Github ols-docker-env](https://github.com/litespeedtech/ols-docker-env/issues) project
 
-**Pull requests are always welcome**
+**Pull requests are always welcome** 
